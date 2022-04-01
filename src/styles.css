@@ -1,0 +1,80 @@
+@font-face {
+    font-family: LibreBaskervilleRegular;
+    src: url('./LibreBaskerville-Regular.ttf');
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: LibreBaskervilleRegular;
+}
+
+#header{
+    background-color: aqua;
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+    height: 10vh;
+    box-shadow: 0px 20px 5px 0px;
+    border-bottom: 1px solid black;
+}
+
+#content{
+    background-color: darksalmon;
+    height: 100vh;
+}
+
+#logo{
+    position: relative;
+    height: 70%;
+    width: auto;
+}
+
+#appName{
+    font-size: 2rem;
+}
+
+#project1-div {
+    display: none;
+}
+
+#nav{
+    background-color: aquamarine;
+    height: 5vh;
+    display: flex;
+    align-items: flex-end;
+    column-gap: 15px;
+    padding-left: 15px;
+    border-bottom: 1px solid black;
+
+}
+
+#nav div{
+    border-bottom: 3px solid rgb(29, 134, 25);
+}
+
+#allProjectsDiv{
+    position: relative;
+    background-color: beige;
+    height: 85vh;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-template-rows: repeat(auto-fill, 300px);
+    row-gap: 15px;
+    column-gap: 15px;
+    padding: 15px;
+}
+
+#project1card{
+    background-color: blueviolet;
+}
+
+#project2card{
+    background-color: brown;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0px 3px 5px 0px;
+}
