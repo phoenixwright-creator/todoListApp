@@ -47,11 +47,25 @@ body {
     column-gap: 15px;
     padding-left: 15px;
     border-bottom: 1px solid black;
-
 }
 
 #nav div{
     border-bottom: 3px solid rgb(29, 134, 25);
+}
+
+#newProjectDiv{
+    padding: 15px;
+    background-color: beige;
+}
+
+#newProjectButton{
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(127, 127, 250);
+    box-shadow: 0px 3px 3px 0px;
+    font-size: 0.9rem;
 }
 
 #allProjectsDiv{
@@ -59,22 +73,41 @@ body {
     background-color: beige;
     height: 85vh;
     display: grid;
-    grid-template-columns: repeat(auto-fill, 300px);
-    grid-template-rows: repeat(auto-fill, 300px);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-auto-rows: 300px;
     row-gap: 15px;
     column-gap: 15px;
     padding: 15px;
 }
 
-#project1card{
-    background-color: blueviolet;
-}
-
-#project2card{
-    background-color: brown;
-}
-
-.card {
+.card{
+    background-color: rgb(239, 248, 152);
     border-radius: 10px;
-    box-shadow: 0px 3px 5px 0px;
+    box-shadow: 0px 3px 3px 0px;
+    display: grid;
+    padding: 15px;
+}
+
+.buttonsDiv{
+    display: grid;
+    row-gap: 15px;
+}
+
+.cardButton{
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0px 2px 2px 0px;
+    font-size: 0.9rem;
+}
+
+.goTo{
+    background-color: rgb(151, 240, 151);
+}
+
+.modify{
+    background-color: rgb(127, 127, 250);
+}
+
+.delete{
+    background-color: rgb(223, 83, 83);
 }
