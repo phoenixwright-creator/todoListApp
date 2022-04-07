@@ -1,31 +1,25 @@
 import './styles.css';
 import Logo from './todoLogo.png';
+import {createNewProject} from './createNewProject.js';
 
-let id = 1;
+function createTemplate(){
+    const content = document.getElementById('content');
 
-function addHeader(){
     const header = document.createElement('header');
     header.id = 'header';
-    header.appendChild(addLogo());
-    header.appendChild(addAppName());
-    return header;
-}
 
-function addLogo(){
     const logo = new Image();
     logo.id = 'logo';
     logo.src = Logo;
-    return logo;
-}
+    header.appendChild(logo);
 
-function addAppName(){
     const name = document.createElement('span');
     name.id = 'appName';
     name.innerHTML = 'My Todo App'.toUpperCase();
-    return name;
-}
+    header.appendChild(name);
 
-function addProjectTabs(){
+    content.appendChild(header);
+
     const nav = document.createElement('nav');
     nav.id = 'nav';
     const allProjects = document.createElement('div');
@@ -44,10 +38,9 @@ function addProjectTabs(){
     newProject.id = 'newProject';
     newProject.innerHTML = 'New Project';
     nav.appendChild(newProject);
-    return nav;
-}
 
-function addNewProjectButton(){
+    content.appendChild(nav);
+
     const newProjectDiv = document.createElement('div');
     newProjectDiv.id = 'newProjectDiv';
 
@@ -55,76 +48,16 @@ function addNewProjectButton(){
     newProjectButton.id = 'newProjectButton';
     newProjectButton.innerHTML = 'New Project';
     newProjectDiv.appendChild(newProjectButton);
-    
-    return newProjectDiv;
-}
 
-function createNewProject(){
-    const allProjectsDiv = document.getElementById('allProjectsDiv');
-    allProjectsDiv.appendChild(createCard(id));
-    id++;
-    const allCards = document.querySelectorAll('.card');
-    console.log(allCards);
-}
+    content.appendChild(newProjectDiv);
 
-function createCard(id){
-    
-    const project = document.createElement('div');
-    project.id = 'project' + id;
-    project.className = 'card';
-    
-    const title = document.createElement('h3');
-    title.id = 'title' + id;
-    title.innerHTML = 'Project ' + id;
-    project.appendChild(title);
-
-    const summary = document.createElement('p');
-    summary.id = 'summary' + id;
-    summary.innerHTML = 'This is the description of the project ' + id;
-    project.appendChild(summary);
-
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.id = 'buttons' + id;
-    buttonsDiv.className = 'buttonsDiv';
-
-    const goToBtn = document.createElement('button');
-    goToBtn.id = 'goTo' + id;
-    goToBtn.className = 'cardButton goTo';
-    goToBtn.innerHTML = 'Go to project';
-    buttonsDiv.appendChild(goToBtn);
-
-    const modifyBtn = document.createElement('button');
-    modifyBtn.id = 'modify' + id;
-    modifyBtn.className = 'cardButton modify';
-    modifyBtn.innerHTML = 'Modify details';
-    buttonsDiv.appendChild(modifyBtn);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.id = 'delete' + id;
-    deleteBtn.className = 'cardButton delete';
-    deleteBtn.innerHTML = 'Delete project';
-    buttonsDiv.appendChild(deleteBtn);
-
-    project.appendChild(buttonsDiv);
-
-    return project;
-}
-
-function displayAllProjects(){
     const allProjectsDiv = document.createElement('div');
     allProjectsDiv.id = 'allProjectsDiv';
 
-    allProjectsDiv.appendChild(createCard(id));
-    id++;
+    content.appendChild(allProjectsDiv);
 
-    allProjectsDiv.appendChild(createCard(id));
-    id++;
-
-    return allProjectsDiv;
+    return content;
 }
 
-document.getElementById('content').appendChild(addHeader());
-document.getElementById('content').appendChild(addProjectTabs());
-document.getElementById('content').appendChild(addNewProjectButton());
-document.getElementById('content').appendChild(displayAllProjects());
+document.body.appendChild(createTemplate());
 document.getElementById('newProjectButton').addEventListener('click', createNewProject);
