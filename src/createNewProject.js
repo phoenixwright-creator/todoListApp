@@ -48,11 +48,13 @@ function createCard(projectId, projectTitle, projectDescription){
     buttonsDiv.className = 'buttonsDiv';
 
     const goToBtn = document.createElement('button');
+    goToBtn.id = projectId;
     goToBtn.className = 'goTo';
     goToBtn.innerHTML = 'Go to project';
     buttonsDiv.appendChild(goToBtn);
 
     const modifyBtn = document.createElement('button');
+    modifyBtn.id = projectId;
     modifyBtn.className = 'modify';
     modifyBtn.innerHTML = 'Modify details';
     buttonsDiv.appendChild(modifyBtn);
@@ -81,5 +83,11 @@ function deleteCard(event){
 }
 
 function modifyCard(event){
-    
+    const modificationDiv = document.getElementById('modificationDiv');
+    modificationDiv.style.display = 'flex';
+}
+
+export function cancelModification(){
+    const modificationDiv = document.getElementById('modificationDiv');
+    modificationDiv.style.display = 'none';
 }
