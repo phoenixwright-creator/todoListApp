@@ -26,18 +26,6 @@ function createTemplate(){
     allProjects.id = 'allNav';
     allProjects.innerHTML = 'All Projects';
     nav.appendChild(allProjects);
-    const project1 = document.createElement('div');
-    project1.id = 'project1Nav';
-    project1.innerHTML = 'Project 1';
-    nav.appendChild(project1);
-    const project2 = document.createElement('div');
-    project2.id = 'project2Nav';
-    project2.innerHTML = 'Project 2';
-    nav.appendChild(project2);
-    const newProject = document.createElement('div');
-    newProject.id = 'newProject';
-    newProject.innerHTML = 'New Project';
-    nav.appendChild(newProject);
 
     content.appendChild(nav);
 
