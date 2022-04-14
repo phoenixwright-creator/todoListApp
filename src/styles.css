@@ -93,6 +93,8 @@
 
 .buttonsDiv{
     display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 15px;
     row-gap: 15px;
 }
 
@@ -101,6 +103,8 @@
     border: none;
     box-shadow: 0px 2px 2px 0px;
     font-size: 0.9rem;
+    height: 50%;
+    align-self: end;
 }
 
 .goTo{
@@ -115,7 +119,7 @@
     background-color: rgb(223, 83, 83);
 }
 
-#modificationDiv{
+#newProjectInfoDiv{
     display: none;
     justify-content: center;
     align-items: center;
@@ -127,23 +131,14 @@
     width: 100%;
 }
 
-#modificationForm{
+#newProjectInfoForm{
+    height: 50vh;
+    width: 50vw;
     background-color: bisque;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    padding: 15px;
-    column-gap: 15px;
-    row-gap: 15px;
-    align-items: center;
-}
-
-#modificationForm h3{
-    grid-column: 1/3;
-    text-align: center;
-}
-
-#modificationForm label{
-    justify-self: center;
     display: flex;
-    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    row-gap: 15px;
+    padding: 15px;
+    font-size: 1rem;
 }

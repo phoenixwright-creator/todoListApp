@@ -2,17 +2,17 @@ let id = 0;
 const allProjects = [];
 
 class Project {
-    constructor(id){
+    constructor(id, title, description){
         this.id = id;
-        this.title = 'Project ' + id;
-        this.description = 'This is the description of the Project ' + id;
+        this.title = title;
+        this.description = description;
         this.dueDate = 'March 2023';
         this.priority = 'Low';
     }
 }
 
-export function createNewProject(){
-    const newProject = new Project(id);
+export function createNewProject(id, title, description){
+    const newProject = new Project(id, title, description);
     id++;
     allProjects.push(newProject);
     displayProjects();
@@ -87,7 +87,24 @@ function modifyCard(event){
     modificationDiv.style.display = 'flex';
 }
 
-export function cancelModification(){
-    const modificationDiv = document.getElementById('modificationDiv');
-    modificationDiv.style.display = 'none';
+export function cancelCreation(){
+    const newProjectInfoDiv = document.getElementById('newProjectInfoDiv');
+    newProjectInfoDiv.style.display = 'none';
+}
+
+export function validateCreation(){
+    const newProjectInfoDiv = document.getElementById('newProjectInfoDiv');
+    newProjectInfoDiv.style.display = 'none';
+    const titleInput = document.getElementById('titleInput').value;
+    const descriptionArea = document.getElementById('description').value;
+    createNewProject(id, titleInput, descriptionArea);
+}
+
+export function displayCreationForm(){
+    const newProjectInfoDiv = document.getElementById('newProjectInfoDiv');
+    newProjectInfoDiv.style.display = 'flex';
+    const titleInput = document.getElementById('titleInput');
+    titleInput.value = '';
+    const descriptionArea = document.getElementById('description');
+    descriptionArea.value = '';
 }

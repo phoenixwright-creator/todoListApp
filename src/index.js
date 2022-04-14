@@ -1,6 +1,6 @@
 import './styles.css';
 import Logo from './todoLogo.png';
-import {createNewProject, cancelModification} from './createNewProject.js';
+import {cancelCreation, displayCreationForm, validateCreation} from './createNewProject.js';
 
 function createTemplate(){
     const content = document.getElementById('content');
@@ -35,6 +35,7 @@ function createTemplate(){
     const newProjectButton = document.createElement('button');
     newProjectButton.id = 'newProjectButton';
     newProjectButton.innerHTML = 'New Project';
+    newProjectButton.onclick = displayCreationForm;
     newProjectDiv.appendChild(newProjectButton);
 
     content.appendChild(newProjectDiv);
@@ -44,45 +45,40 @@ function createTemplate(){
 
     content.appendChild(allProjectsDiv);
 
-    const modificationDiv = document.createElement('div');
-    modificationDiv.id = 'modificationDiv';
-    const modificationForm = document.createElement('div');
-    modificationForm.id = 'modificationForm';
-    const modificationLabel = document.createElement('h3');
-    modificationLabel.innerHTML = 'What do you want to modify on this project ?';
-    const titleRadio = document.createElement('input');
-    titleRadio.type = 'radio';
-    titleRadio.id = 'title';
-    titleRadio.name = 'modification';
-    titleRadio.value = 'title';
-    titleRadio.checked = true;
+    const newProjectInfoDiv = document.createElement('div');
+    newProjectInfoDiv.id = 'newProjectInfoDiv';
+    const newProjectInfoForm = document.createElement('div');
+    newProjectInfoForm.id = 'newProjectInfoForm';
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.id = 'titleInput';
     const titleLabel = document.createElement('label');
     titleLabel.innerHTML = 'Title';
-    titleLabel.htmlFor = 'title';
-    const descriptionRadio = document.createElement('input');
-    descriptionRadio.type = 'radio';
-    descriptionRadio.id = 'description';
-    descriptionRadio.name = 'modification';
-    descriptionRadio.value = 'description';
+    titleLabel.htmlFor = 'titletitleInput';
+    const descriptionArea = document.createElement('textarea');
+    descriptionArea.id = 'description';
     const descriptionLabel = document.createElement('label');
     descriptionLabel.innerHTML = 'Description';
     descriptionLabel.htmlFor = 'description';
+    const validate = document.createElement('button');
+    validate.id = 'validate';
+    validate.innerHTML = 'Validate';
+    validate.onclick = validateCreation;
     const cancel = document.createElement('button');
     cancel.id = 'cancel';
     cancel.innerHTML = 'Cancel';
-    cancel.onclick = cancelModification;
+    cancel.onclick = cancelCreation;
 
-    content.appendChild(modificationDiv);
-    modificationDiv.appendChild(modificationForm);
-    modificationForm.appendChild(modificationLabel);
-    modificationForm.appendChild(titleLabel);
-    titleLabel.appendChild(titleRadio);
-    modificationForm.appendChild(descriptionLabel);
-    descriptionLabel.appendChild(descriptionRadio);
-    modificationForm.appendChild(cancel);
+    content.appendChild(newProjectInfoDiv);
+    newProjectInfoDiv.appendChild(newProjectInfoForm);
+    newProjectInfoForm.appendChild(titleLabel);
+    newProjectInfoForm.appendChild(titleInput);
+    newProjectInfoForm.appendChild(descriptionLabel);
+    newProjectInfoForm.appendChild(descriptionArea);
+    newProjectInfoForm.appendChild(validate);
+    newProjectInfoForm.appendChild(cancel);
 
     return content;
 }
 
 document.body.appendChild(createTemplate());
-document.getElementById('newProjectButton').addEventListener('click', createNewProject);
