@@ -8,6 +8,16 @@ class Project {
         this.description = description;
         this.dueDate = 'March 2023';
         this.priority = 'Low';
+        this.tasks = ['Default task 1', 'Default task 2', 'Default task 3'];
+    }
+    getTitle(){
+        return this.title;
+    }
+    getDescription(){
+        return this.description;
+    }
+    getTasks(){
+        return this.tasks;
     }
 }
 
@@ -52,6 +62,7 @@ function createCard(projectId, projectTitle, projectDescription){
     goToBtn.className = 'goTo';
     goToBtn.innerHTML = 'Go to project';
     buttonsDiv.appendChild(goToBtn);
+    goToBtn.onclick = goTo;
 
     const modifyBtn = document.createElement('button');
     modifyBtn.id = projectId;
@@ -107,4 +118,73 @@ export function displayCreationForm(){
     titleInput.value = '';
     const descriptionArea = document.getElementById('description');
     descriptionArea.value = '';
+}
+
+export function goTo(event){
+    const newProjectDiv = document.getElementById('newProjectDiv');
+    newProjectDiv.style.display = 'none';
+    const allProjectsDiv = document.getElementById('allProjectsDiv');
+    allProjectsDiv.style.display = 'none';
+    createCurrentProjectLink(event.target.id);
+    displayCurrentProject(event.target.id);
+}
+
+export function displayCurrentProject(id){
+    const currentProject = document.getElementById('currentProject');
+    const currentProjectTitle = document.createElement('h3');
+    currentProjectTitle.id = id;
+    currentProjectTitle.innerHTML = 'Title: ' + allProjects[id].getTitle();
+    const currentProjectDescription = document.createElement('p');
+    currentProjectDescription.id = id;
+    currentProjectDescription.innerHTML = 'Description: ' + allProjects[id].getDescription();
+    currentProject.appendChild(currentProjectTitle);
+    currentProject.appendChild(currentProjectDescription);
+    const tasks = allProjects[id].getTasks();
+    if(tasks.length===0){
+        const para = document.createElement('p');
+        para.id = id;
+        para.innerHTML = 'No tasks yet.';
+        currentProject.appendChild(para);
+    }
+    else{
+        const currentProjectTasks = document.createElement('ol');
+        for(let i=0; i<tasks.length; i++){
+            const list = document.createElement('li');
+            list.innerHTML = tasks[i];
+            currentProjectTasks.appendChild(list);
+        }
+        currentProject.appendChild(currentProjectTasks);
+    }
+    currentProject.style.display = 'block';
+}
+
+export function newTask(){
+
+}
+
+export function createCurrentProjectLink(id){
+    const navLinks = document.getElementById('nav');
+    const newLink = document.createElement('div');
+    newLink.id = id;
+    newLink.innerHTML = allProjects[id].getTitle();
+    newLink.onclick = returnToProject;
+    navLinks.appendChild(newLink);
+}
+
+export function displayAllProjects(){
+    const currentProject = document.getElementById('currentProject');
+    currentProject.style.display = 'none';
+    const newProjectDiv = document.getElementById('newProjectDiv');
+    newProjectDiv.style.display = 'flex';
+    const allProjectsDiv = document.getElementById('allProjectsDiv');
+    allProjectsDiv.style.display = 'grid';
+}
+
+export function returnToProject(){
+    const currentProject = document.getElementById('currentProject');
+    currentProject.style.display = 'block';
+    const newProjectDiv = document.getElementById('newProjectDiv');
+    newProjectDiv.style.display = 'none';
+    const allProjectsDiv = document.getElementById('allProjectsDiv');
+    allProjectsDiv.style.display = 'none';
 }
