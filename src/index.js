@@ -79,15 +79,6 @@ function createTemplate(){
     newProjectInfoForm.appendChild(validate);
     newProjectInfoForm.appendChild(cancel);
 
-    const currentProject = document.createElement('div');
-    currentProject.id = 'currentProject';
-    currentProject.style.display = 'none';
-    const addTask = document.createElement('button');
-    addTask.innerHTML = 'Add a task';
-    addTask.onclick = newTask;
-    currentProject.appendChild(addTask);
-    content.appendChild(currentProject);
-
     return content;
 }
 

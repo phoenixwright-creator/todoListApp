@@ -1,5 +1,6 @@
-let id = 0;
+let index = 0;
 const allProjects = [];
+let currentProjectOpen = undefined;
 
 class Project {
     constructor(id, title, description){
@@ -8,7 +9,10 @@ class Project {
         this.description = description;
         this.dueDate = 'March 2023';
         this.priority = 'Low';
-        this.tasks = ['Default task 1', 'Default task 2', 'Default task 3'];
+        this.tasks = [];
+    }
+    getId(){
+        return this.id;
     }
     getTitle(){
         return this.title;
@@ -23,20 +27,21 @@ class Project {
 
 export function createNewProject(id, title, description){
     const newProject = new Project(id, title, description);
-    id++;
     allProjects.push(newProject);
     displayProjects();
 }
 
 function displayProjects(){
     const allProjectsDiv = document.getElementById('allProjectsDiv');
-    if(allProjectsDiv){
+    if(allProjectsDiv!==null){
         while(allProjectsDiv.firstChild){
             allProjectsDiv.removeChild(allProjectsDiv.firstChild);
         }
     }
     for(let project in allProjects){
-        allProjectsDiv.appendChild(createCard(allProjects[project].id, allProjects[project].title, allProjects[project].description));
+        if(allProjects[project]!=='projectDeleted'){
+            allProjectsDiv.appendChild(createCard(allProjects[project].id, allProjects[project].title, allProjects[project].description));
+        }   
     }
 }
 
@@ -47,11 +52,11 @@ function createCard(projectId, projectTitle, projectDescription){
     projectDiv.className = 'card';
 
     const title = document.createElement('h3');
-    title.innerHTML = projectTitle;
+    title.innerHTML = 'Title : ' + projectTitle;
     projectDiv.appendChild(title);
 
     const description = document.createElement('p');
-    description.innerHTML = projectDescription;
+    description.innerHTML = 'Description : ' + projectDescription;
     projectDiv.appendChild(description);
 
     const buttonsDiv = document.createElement('div');
@@ -84,9 +89,19 @@ function createCard(projectId, projectTitle, projectDescription){
 }
 
 function deleteCard(event){
+    const navLinks = document.getElementById('nav');
+    const deleteLink = document.getElementById(`link${event.target.id}`);
+    if(deleteLink!==null){
+        navLinks.removeChild(deleteLink);
+    }
+    const content = document.getElementById('content');
+    const currentProject = document.getElementById(`currentProject${event.target.id}`);
+    if(currentProject!==null){
+        content.removeChild(currentProject);
+    }
     for(let project in allProjects){
         if(allProjects[project].id == event.target.id){
-            allProjects.splice(project, 1);
+            allProjects.splice(project, 1, 'projectDeleted');
             break;
         }
     }
@@ -108,7 +123,8 @@ export function validateCreation(){
     newProjectInfoDiv.style.display = 'none';
     const titleInput = document.getElementById('titleInput').value;
     const descriptionArea = document.getElementById('description').value;
-    createNewProject(id, titleInput, descriptionArea);
+    createNewProject(index, titleInput, descriptionArea);
+    index++;
 }
 
 export function displayCreationForm(){
@@ -125,18 +141,36 @@ export function goTo(event){
     newProjectDiv.style.display = 'none';
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     allProjectsDiv.style.display = 'none';
-    createCurrentProjectLink(event.target.id);
-    displayCurrentProject(event.target.id);
+    const projectLink = document.getElementById(`link${event.target.id}`);
+    if(projectLink===null){
+        createCurrentProjectLink(event.target.id);
+    }
+    const currentProject = document.getElementById(`currentProject${event.target.id}`);
+    if(currentProject===null){
+        createCurrentProject(event.target.id);
+    }
+    else{
+        currentProject.style.display = 'grid';
+        currentProjectOpen = event.target.id;
+    }
 }
 
-export function displayCurrentProject(id){
-    const currentProject = document.getElementById('currentProject');
+export function createCurrentProject(id){
+    const content = document.getElementById('content');
+    const currentProject = document.createElement('div');
+    currentProject.id = 'currentProject'+id;
+    currentProject.className = 'projectPages';
+    const addTask = document.createElement('button');
+    addTask.innerHTML = 'Add a task';
+    addTask.onclick = newTask;
+    currentProject.appendChild(addTask);
+    content.appendChild(currentProject);
     const currentProjectTitle = document.createElement('h3');
     currentProjectTitle.id = id;
-    currentProjectTitle.innerHTML = 'Title: ' + allProjects[id].getTitle();
+    currentProjectTitle.innerHTML = 'Title : ' + allProjects[id].getTitle();
     const currentProjectDescription = document.createElement('p');
     currentProjectDescription.id = id;
-    currentProjectDescription.innerHTML = 'Description: ' + allProjects[id].getDescription();
+    currentProjectDescription.innerHTML = 'Description : ' + allProjects[id].getDescription();
     currentProject.appendChild(currentProjectTitle);
     currentProject.appendChild(currentProjectDescription);
     const tasks = allProjects[id].getTasks();
@@ -155,7 +189,8 @@ export function displayCurrentProject(id){
         }
         currentProject.appendChild(currentProjectTasks);
     }
-    currentProject.style.display = 'block';
+    currentProject.style.display = 'grid';
+    currentProjectOpen = id;
 }
 
 export function newTask(){
@@ -163,26 +198,40 @@ export function newTask(){
 }
 
 export function createCurrentProjectLink(id){
+    
     const navLinks = document.getElementById('nav');
     const newLink = document.createElement('div');
-    newLink.id = id;
+    newLink.id = 'link'+id;
     newLink.innerHTML = allProjects[id].getTitle();
     newLink.onclick = returnToProject;
     navLinks.appendChild(newLink);
 }
 
 export function displayAllProjects(){
-    const currentProject = document.getElementById('currentProject');
-    currentProject.style.display = 'none';
+    for(let i=0; i<allProjects.length;i++){
+        const currentProject = document.getElementById(`currentProject${i}`);
+        if(currentProject!==null){
+            currentProject.style.display = 'none';
+        }
+    }
     const newProjectDiv = document.getElementById('newProjectDiv');
     newProjectDiv.style.display = 'flex';
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     allProjectsDiv.style.display = 'grid';
 }
 
-export function returnToProject(){
-    const currentProject = document.getElementById('currentProject');
-    currentProject.style.display = 'block';
+export function returnToProject(event){
+    let linkID = event.target.id;
+    linkID = linkID.split('');
+    linkID.splice(0, 4);
+    linkID = linkID.join('');
+    if(currentProjectOpen!==undefined){
+        const projectToClose = document.getElementById(`currentProject${currentProjectOpen}`);
+        projectToClose.style.display = 'none';
+    }
+    const currentProject = document.getElementById(`currentProject${linkID}`);
+    currentProject.style.display = 'grid';
+    currentProjectOpen = linkID;
     const newProjectDiv = document.getElementById('newProjectDiv');
     newProjectDiv.style.display = 'none';
     const allProjectsDiv = document.getElementById('allProjectsDiv');
