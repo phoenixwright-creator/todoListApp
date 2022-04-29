@@ -1,6 +1,6 @@
 import './styles.css';
 import Logo from './todoLogo.png';
-import {cancelCreation, displayCreationForm, validateCreation, newTask, displayAllProjects} from './createNewProject.js';
+import {cancelCreation, displayCreationForm, validateCreationMouse, validateCreationKeyboard, displayAllProjects} from './createNewProject.js';
 
 function createTemplate(){
     const content = document.getElementById('content');
@@ -24,6 +24,7 @@ function createTemplate(){
     nav.id = 'nav';
     const allProjects = document.createElement('div');
     allProjects.id = 'allNav';
+    allProjects.className = 'links';
     allProjects.innerHTML = 'All Projects';
     allProjects.onclick = displayAllProjects;
     nav.appendChild(allProjects);
@@ -64,7 +65,8 @@ function createTemplate(){
     const validate = document.createElement('button');
     validate.id = 'validate';
     validate.innerHTML = 'Validate';
-    validate.onclick = validateCreation;
+    validate.onclick = validateCreationMouse;
+    newProjectInfoForm.onkeyup = validateCreationKeyboard;
     const cancel = document.createElement('button');
     cancel.id = 'cancel';
     cancel.innerHTML = 'Cancel';

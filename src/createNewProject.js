@@ -2,7 +2,7 @@ let index = 0;
 const allProjects = [];
 let currentProjectOpen = undefined;
 
-class Project {
+export class Project {
     constructor(id, title, description){
         this.id = id;
         this.title = title;
@@ -31,7 +31,7 @@ export function createNewProject(id, title, description){
     displayProjects();
 }
 
-function displayProjects(){
+export function displayProjects(){
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     if(allProjectsDiv!==null){
         while(allProjectsDiv.firstChild){
@@ -45,7 +45,7 @@ function displayProjects(){
     }
 }
 
-function createCard(projectId, projectTitle, projectDescription){
+export function createCard(projectId, projectTitle, projectDescription){
 
     const projectDiv = document.createElement('div');
     projectDiv.id = projectId;
@@ -88,7 +88,7 @@ function createCard(projectId, projectTitle, projectDescription){
     return projectDiv;
 }
 
-function deleteCard(event){
+export function deleteCard(event){
     const navLinks = document.getElementById('nav');
     const deleteLink = document.getElementById(`link${event.target.id}`);
     if(deleteLink!==null){
@@ -108,7 +108,7 @@ function deleteCard(event){
     displayProjects();
 }
 
-function modifyCard(event){
+export function modifyCard(event){
     const modificationDiv = document.getElementById('modificationDiv');
     modificationDiv.style.display = 'flex';
 }
@@ -118,13 +118,24 @@ export function cancelCreation(){
     newProjectInfoDiv.style.display = 'none';
 }
 
-export function validateCreation(){
+export function validateCreationMouse(){
     const newProjectInfoDiv = document.getElementById('newProjectInfoDiv');
     newProjectInfoDiv.style.display = 'none';
     const titleInput = document.getElementById('titleInput').value;
     const descriptionArea = document.getElementById('description').value;
     createNewProject(index, titleInput, descriptionArea);
     index++;
+}
+
+export function validateCreationKeyboard(event){
+    if(event.key === 'Enter'){
+        const newProjectInfoDiv = document.getElementById('newProjectInfoDiv');
+        newProjectInfoDiv.style.display = 'none';
+        const titleInput = document.getElementById('titleInput').value;
+        const descriptionArea = document.getElementById('description').value;
+        createNewProject(index, titleInput, descriptionArea);
+        index++;
+    }
 }
 
 export function displayCreationForm(){
@@ -155,28 +166,29 @@ export function goTo(event){
     }
 }
 
-export function createCurrentProject(id){
+export function createCurrentProject(projectId){
     const content = document.getElementById('content');
     const currentProject = document.createElement('div');
-    currentProject.id = 'currentProject'+id;
+    currentProject.id = 'currentProject'+projectId;
     currentProject.className = 'projectPages';
     const addTask = document.createElement('button');
     addTask.innerHTML = 'Add a task';
     addTask.onclick = newTask;
+    addTask.id = projectId;
     currentProject.appendChild(addTask);
     content.appendChild(currentProject);
     const currentProjectTitle = document.createElement('h3');
-    currentProjectTitle.id = id;
-    currentProjectTitle.innerHTML = 'Title : ' + allProjects[id].getTitle();
+    currentProjectTitle.id = projectId;
+    currentProjectTitle.innerHTML = 'Title : ' + allProjects[projectId].getTitle();
     const currentProjectDescription = document.createElement('p');
-    currentProjectDescription.id = id;
-    currentProjectDescription.innerHTML = 'Description : ' + allProjects[id].getDescription();
+    currentProjectDescription.id = projectId;
+    currentProjectDescription.innerHTML = 'Description : ' + allProjects[projectId].getDescription();
     currentProject.appendChild(currentProjectTitle);
     currentProject.appendChild(currentProjectDescription);
-    const tasks = allProjects[id].getTasks();
+    const tasks = allProjects[projectId].getTasks();
     if(tasks.length===0){
         const para = document.createElement('p');
-        para.id = id;
+        para.id = 'para'+projectId;
         para.innerHTML = 'No tasks yet.';
         currentProject.appendChild(para);
     }
@@ -190,11 +202,51 @@ export function createCurrentProject(id){
         currentProject.appendChild(currentProjectTasks);
     }
     currentProject.style.display = 'grid';
-    currentProjectOpen = id;
+    currentProjectOpen = projectId;
 }
 
-export function newTask(){
+export function newTask(event){
+    const projectId = event.target.id;
+    const para = document.getElementById(`para${event.target.id}`);
+    if(para.innerHTML === 'No tasks yet.'){
+        para.innerHTML = '';
+        const ol = document.createElement('ol');
+        ol.id = 'list'+event.target.id;
+        const li = document.createElement('li');
+        li.id = 'newTask';
+        const text = document.createElement('input');
+        text.id = 'newInput';
+        text.onkeyup = validateNewTask;
+        para.appendChild(ol);
+        ol.appendChild(li);
+        li.appendChild(text);
+    }
+    else{
+        const ol = document.getElementById(`list${event.target.id}`);
+        const li = document.createElement('li');
+        li.id = 'newTask';
+        const text = document.createElement('input');
+        text.id = 'newInput';
+        text.onkeyup = validateNewTask;
+        ol.appendChild(li);
+        li.appendChild(text);
+    }
+}
 
+export function validateNewTask(event){
+    let projectId = event.target.parentElement.parentElement.id;
+    projectId = projectId.split('');
+    projectId.splice(0, 4);
+    projectId = projectId.join('');
+    if(event.key==='Enter'){
+        const newTask = event.target.value;
+        const li = document.getElementById('newTask');
+        const input = document.getElementById('newInput');
+        li.removeChild(input);
+        li.innerHTML = newTask;
+        li.id = 'taskValid';
+        allProjects[projectId].tasks.push(newTask);
+    }
 }
 
 export function createCurrentProjectLink(id){
@@ -202,6 +254,7 @@ export function createCurrentProjectLink(id){
     const navLinks = document.getElementById('nav');
     const newLink = document.createElement('div');
     newLink.id = 'link'+id;
+    newLink.className = 'links';
     newLink.innerHTML = allProjects[id].getTitle();
     newLink.onclick = returnToProject;
     navLinks.appendChild(newLink);
