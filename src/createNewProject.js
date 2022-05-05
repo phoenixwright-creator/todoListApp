@@ -1,6 +1,3 @@
-let index = 0;
-const allProjects = [];
-let currentProjectOpen = undefined;
 
 export class Project {
     constructor(id, title, description){
@@ -25,9 +22,37 @@ export class Project {
     }
 }
 
+let index = 0;
+const allProjects = [];
+const projectCreated = localStorage.getItem('projectCreated');
+if(projectCreated){
+    const numberOfProjects = localStorage.getItem('numberOfProjects');
+    index = Number(numberOfProjects)+1;
+    for(let i=0; i<=numberOfProjects; i++){
+        const projectId = localStorage.getItem(`id${i}`);
+        const projectTitle = localStorage.getItem(`title${i}`);
+        const projectDescription = localStorage.getItem(`description${i}`);
+        if(projectId){
+            const newProject = new Project(projectId, projectTitle, projectDescription);
+            allProjects.push(newProject);
+        }
+    }
+    
+}
+let currentProjectOpen = undefined;
+
 export function createNewProject(id, title, description){
     const newProject = new Project(id, title, description);
+    if(!localStorage.getItem('projectCreated')){
+        localStorage.setItem('projectCreated', true);
+    }
     allProjects.push(newProject);
+    localStorage.setItem(`id${id}`, newProject.id);
+    localStorage.setItem(`title${id}`, newProject.title);
+    localStorage.setItem(`description${id}`, newProject.description);
+    localStorage.setItem('numberOfProjects', id);
+    
+    
     displayProjects();
 }
 
@@ -40,7 +65,10 @@ export function displayProjects(){
     }
     for(let project in allProjects){
         if(allProjects[project]!=='projectDeleted'){
-            allProjectsDiv.appendChild(createCard(allProjects[project].id, allProjects[project].title, allProjects[project].description));
+            const projectId = localStorage.getItem(`id${project}`);
+            const projectTitle = localStorage.getItem(`title${project}`);
+            const projectDescription = localStorage.getItem(`description${project}`);
+            allProjectsDiv.appendChild(createCard(projectId, projectTitle, projectDescription));
         }   
     }
 }
@@ -101,9 +129,16 @@ export function deleteCard(event){
     }
     for(let project in allProjects){
         if(allProjects[project].id == event.target.id){
-            allProjects.splice(project, 1, 'projectDeleted');
-            break;
+            allProjects.splice(project, 1);
         }
+    }
+    const numberOfProjects = localStorage.getItem('numberOfProjects');
+    localStorage.setItem('numberOfProjects', numberOfProjects-1);
+    localStorage.removeItem(`id${event.target.id}`);
+    localStorage.removeItem(`title${event.target.id}`);
+    localStorage.removeItem(`description${event.target.id}`);
+    if(allProjects.length===0){
+        localStorage.removeItem(`projectCreated`);
     }
     displayProjects();
 }

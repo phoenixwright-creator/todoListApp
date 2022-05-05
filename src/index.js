@@ -1,6 +1,6 @@
 import './styles.css';
 import Logo from './todoLogo.png';
-import {cancelCreation, displayCreationForm, validateCreationMouse, validateCreationKeyboard, displayAllProjects} from './createNewProject.js';
+import {cancelCreation, displayProjects, displayCreationForm, validateCreationMouse, validateCreationKeyboard, displayAllProjects} from './createNewProject.js';
 
 function createTemplate(){
     const content = document.getElementById('content');
@@ -85,3 +85,5 @@ function createTemplate(){
 }
 
 document.body.appendChild(createTemplate());
+
+displayProjects();
