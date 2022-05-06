@@ -23,26 +23,12 @@ export class Project {
 }
 
 let index = 0;
-const allProjects = [];
-const projectCreated = localStorage.getItem('projectCreated');
-if(projectCreated){
-    const numberOfProjects = localStorage.getItem('numberOfProjects');
-    index = Number(numberOfProjects)+1;
-    for(let i=0; i<=numberOfProjects; i++){
-        const projectId = localStorage.getItem(`id${i}`);
-        const projectTitle = localStorage.getItem(`title${i}`);
-        const projectDescription = localStorage.getItem(`description${i}`);
-        if(projectId){
-            const newProject = new Project(projectId, projectTitle, projectDescription);
-            allProjects.push(newProject);
-        }
-    }
-    
-}
-let currentProjectOpen = undefined;
+let allProjects = [];
+
+let currentProjectOpen = null;
 
 export function createNewProject(id, title, description){
-    const newProject = new Project(id, title, description);
+    const newProject = new Project(String(id), title, description);
     if(!localStorage.getItem('projectCreated')){
         localStorage.setItem('projectCreated', true);
     }
@@ -50,27 +36,65 @@ export function createNewProject(id, title, description){
     localStorage.setItem(`id${id}`, newProject.id);
     localStorage.setItem(`title${id}`, newProject.title);
     localStorage.setItem(`description${id}`, newProject.description);
-    localStorage.setItem('numberOfProjects', id);
-    
-    
+    let numberOfProjects = Number(localStorage.getItem('numberOfProjects'));
+    if(numberOfProjects===null || numberOfProjects===0 || numberOfProjects===undefined){
+        localStorage.setItem('numberOfProjects', 1);
+    }
+    else{
+        localStorage.setItem('numberOfProjects', numberOfProjects+1);
+    }
     displayProjects();
 }
 
 export function displayProjects(){
+    const projectCreated = localStorage.getItem('projectCreated');
+    if(projectCreated && allProjects.length===0){
+        const numberOfProjects = localStorage.getItem('numberOfProjects');
+        
+        for(let project in localStorage){
+            if(project[0]==='i' && project[1]==='d'){
+                const projectId = localStorage.getItem(project);
+                const projectTitle = localStorage.getItem(`title${projectId}`);
+                const projectDescription = localStorage.getItem(`description${projectId}`);
+                const newProject = new Project(projectId, projectTitle, projectDescription);
+                allProjects.push(newProject);
+            }
+        }
+        allProjects = allProjects.sort((a,b) => {
+            if(Number(a.id)>Number(b.id)){
+                return 1;
+            }
+            else if(Number(a.id)<Number(b.id)){
+                return -1;
+            }
+        });
+        console.log(allProjects);
+        index = Number(allProjects[allProjects.length-1].id)+1;
+    }
+    else if(projectCreated && allProjects.length!==0){
+        allProjects = allProjects.sort((a,b) => {
+            if(Number(a.id)>Number(b.id)){
+                return 1;
+            }
+            else if(Number(a.id)<Number(b.id)){
+                return -1;
+            }
+        });
+        console.log(allProjects);
+        index = Number(allProjects[allProjects.length-1].id)+1;
+    }
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     if(allProjectsDiv!==null){
         while(allProjectsDiv.firstChild){
             allProjectsDiv.removeChild(allProjectsDiv.firstChild);
         }
     }
-    for(let project in allProjects){
-        if(allProjects[project]!=='projectDeleted'){
-            const projectId = localStorage.getItem(`id${project}`);
-            const projectTitle = localStorage.getItem(`title${project}`);
-            const projectDescription = localStorage.getItem(`description${project}`);
+        for(let project in allProjects){
+            const projectId = allProjects[project].getId();
+            const projectTitle = allProjects[project].getTitle();
+            const projectDescription = allProjects[project].getDescription();
             allProjectsDiv.appendChild(createCard(projectId, projectTitle, projectDescription));
-        }   
-    }
+        }
 }
 
 export function createCard(projectId, projectTitle, projectDescription){
@@ -132,7 +156,7 @@ export function deleteCard(event){
             allProjects.splice(project, 1);
         }
     }
-    const numberOfProjects = localStorage.getItem('numberOfProjects');
+    let numberOfProjects = Number(localStorage.getItem('numberOfProjects'));
     localStorage.setItem('numberOfProjects', numberOfProjects-1);
     localStorage.removeItem(`id${event.target.id}`);
     localStorage.removeItem(`title${event.target.id}`);
@@ -201,43 +225,61 @@ export function goTo(event){
     }
 }
 
-export function createCurrentProject(projectId){
-    const content = document.getElementById('content');
-    const currentProject = document.createElement('div');
-    currentProject.id = 'currentProject'+projectId;
-    currentProject.className = 'projectPages';
-    const addTask = document.createElement('button');
-    addTask.innerHTML = 'Add a task';
-    addTask.onclick = newTask;
-    addTask.id = projectId;
-    currentProject.appendChild(addTask);
-    content.appendChild(currentProject);
-    const currentProjectTitle = document.createElement('h3');
-    currentProjectTitle.id = projectId;
-    currentProjectTitle.innerHTML = 'Title : ' + allProjects[projectId].getTitle();
-    const currentProjectDescription = document.createElement('p');
-    currentProjectDescription.id = projectId;
-    currentProjectDescription.innerHTML = 'Description : ' + allProjects[projectId].getDescription();
-    currentProject.appendChild(currentProjectTitle);
-    currentProject.appendChild(currentProjectDescription);
-    const tasks = allProjects[projectId].getTasks();
-    if(tasks.length===0){
-        const para = document.createElement('p');
-        para.id = 'para'+projectId;
-        para.innerHTML = 'No tasks yet.';
-        currentProject.appendChild(para);
-    }
-    else{
-        const currentProjectTasks = document.createElement('ol');
-        for(let i=0; i<tasks.length; i++){
-            const list = document.createElement('li');
-            list.innerHTML = tasks[i];
-            currentProjectTasks.appendChild(list);
+export function createCurrentProjectLink(id){
+    for(let project in allProjects){
+        if(id === allProjects[project].id){
+            const navLinks = document.getElementById('nav');
+            const newLink = document.createElement('div');
+            newLink.id = 'link'+allProjects[project].id;
+            newLink.className = 'links';
+            newLink.innerHTML = allProjects[project].title;
+            newLink.onclick = returnToProject;
+            navLinks.appendChild(newLink);
         }
-        currentProject.appendChild(currentProjectTasks);
     }
-    currentProject.style.display = 'grid';
-    currentProjectOpen = projectId;
+}
+
+export function createCurrentProject(projectId){
+    for(let project in allProjects){
+        if(projectId === allProjects[project].id){
+            const content = document.getElementById('content');
+            const currentProject = document.createElement('div');
+            currentProject.id = 'currentProject'+allProjects[project].id;
+            currentProject.className = 'projectPages';
+            const addTask = document.createElement('button');
+            addTask.innerHTML = 'Add a task';
+            addTask.onclick = newTask;
+            addTask.id = allProjects[project].id;
+            currentProject.appendChild(addTask);
+            content.appendChild(currentProject);
+            const currentProjectTitle = document.createElement('h3');
+            currentProjectTitle.id = allProjects[project].id;
+            currentProjectTitle.innerHTML = 'Title : ' + allProjects[project].getTitle();
+            const currentProjectDescription = document.createElement('p');
+            currentProjectDescription.id = allProjects[project].id;
+            currentProjectDescription.innerHTML = 'Description : ' + allProjects[project].getDescription();
+            currentProject.appendChild(currentProjectTitle);
+            currentProject.appendChild(currentProjectDescription);
+            const tasks = allProjects[project].getTasks();
+            if(tasks.length===0){
+                const para = document.createElement('p');
+                para.id = 'para'+allProjects[project].id;
+                para.innerHTML = 'No tasks yet.';
+                currentProject.appendChild(para);
+            }
+            else{
+                const currentProjectTasks = document.createElement('ol');
+                for(let i=0; i<tasks.length; i++){
+                    const list = document.createElement('li');
+                    list.innerHTML = tasks[i];
+                    currentProjectTasks.appendChild(list);
+                }
+                currentProject.appendChild(currentProjectTasks);
+            }
+            currentProject.style.display = 'grid';
+            currentProjectOpen = allProjects[project].id;
+        }
+    }
 }
 
 export function newTask(event){
@@ -280,24 +322,17 @@ export function validateNewTask(event){
         li.removeChild(input);
         li.innerHTML = newTask;
         li.id = 'taskValid';
-        allProjects[projectId].tasks.push(newTask);
+        for(let project in allProjects){
+            if(projectId === allProjects[project].id){
+                allProjects[project].tasks.push(newTask);
+            }
+        }
     }
-}
-
-export function createCurrentProjectLink(id){
-    
-    const navLinks = document.getElementById('nav');
-    const newLink = document.createElement('div');
-    newLink.id = 'link'+id;
-    newLink.className = 'links';
-    newLink.innerHTML = allProjects[id].getTitle();
-    newLink.onclick = returnToProject;
-    navLinks.appendChild(newLink);
 }
 
 export function displayAllProjects(){
     for(let i=0; i<allProjects.length;i++){
-        const currentProject = document.getElementById(`currentProject${i}`);
+        const currentProject = document.getElementById(`currentProject${allProjects[i].id}`);
         if(currentProject!==null){
             currentProject.style.display = 'none';
         }
@@ -306,15 +341,18 @@ export function displayAllProjects(){
     newProjectDiv.style.display = 'flex';
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     allProjectsDiv.style.display = 'grid';
+    currentProjectOpen = null;
 }
 
 export function returnToProject(event){
+    
     let linkID = event.target.id;
     linkID = linkID.split('');
     linkID.splice(0, 4);
     linkID = linkID.join('');
-    if(currentProjectOpen!==undefined){
+    if(currentProjectOpen!==null){
         const projectToClose = document.getElementById(`currentProject${currentProjectOpen}`);
+        console.log(projectToClose);
         projectToClose.style.display = 'none';
     }
     const currentProject = document.getElementById(`currentProject${linkID}`);
@@ -324,4 +362,5 @@ export function returnToProject(event){
     newProjectDiv.style.display = 'none';
     const allProjectsDiv = document.getElementById('allProjectsDiv');
     allProjectsDiv.style.display = 'none';
+    currentProjectOpen=event.target.id;
 }
