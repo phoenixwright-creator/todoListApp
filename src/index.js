@@ -85,5 +85,4 @@ function createTemplate(){
 }
 
 document.body.appendChild(createTemplate());
-
 displayProjects();

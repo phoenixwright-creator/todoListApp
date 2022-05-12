@@ -24,7 +24,6 @@ export class Project {
 
 let index = 0;
 let allProjects = [];
-
 let currentProjectOpen = null;
 
 export function createNewProject(id, title, description){
@@ -58,6 +57,19 @@ export function displayProjects(){
                 const projectDescription = localStorage.getItem(`description${projectId}`);
                 const newProject = new Project(projectId, projectTitle, projectDescription);
                 allProjects.push(newProject);
+                let tasks = localStorage.getItem(`tasks${projectId}`);
+                if(tasks){
+                    tasks = tasks.split(',');
+                }
+                if(tasks){
+                    for(let task in tasks){
+                        for(let project in allProjects){
+                            if(allProjects[project].id === projectId){
+                                allProjects[project].tasks.push(tasks[task]);
+                            }
+                        }
+                    }
+                }
             }
         }
         allProjects = allProjects.sort((a,b) => {
@@ -68,7 +80,6 @@ export function displayProjects(){
                 return -1;
             }
         });
-        console.log(allProjects);
         index = Number(allProjects[allProjects.length-1].id)+1;
     }
     else if(projectCreated && allProjects.length!==0){
@@ -80,7 +91,6 @@ export function displayProjects(){
                 return -1;
             }
         });
-        console.log(allProjects);
         index = Number(allProjects[allProjects.length-1].id)+1;
     }
     const allProjectsDiv = document.getElementById('allProjectsDiv');
@@ -161,6 +171,7 @@ export function deleteCard(event){
     localStorage.removeItem(`id${event.target.id}`);
     localStorage.removeItem(`title${event.target.id}`);
     localStorage.removeItem(`description${event.target.id}`);
+    localStorage.removeItem(`tasks${event.target.id}`);
     if(allProjects.length===0){
         localStorage.removeItem(`projectCreated`);
     }
@@ -268,13 +279,17 @@ export function createCurrentProject(projectId){
                 currentProject.appendChild(para);
             }
             else{
+                const para = document.createElement('p');
+                para.id = 'para'+allProjects[project].id;
                 const currentProjectTasks = document.createElement('ol');
+                currentProjectTasks.id = 'list'+projectId;
                 for(let i=0; i<tasks.length; i++){
                     const list = document.createElement('li');
                     list.innerHTML = tasks[i];
                     currentProjectTasks.appendChild(list);
                 }
-                currentProject.appendChild(currentProjectTasks);
+                para.appendChild(currentProjectTasks);
+                currentProject.appendChild(para);
             }
             currentProject.style.display = 'grid';
             currentProjectOpen = allProjects[project].id;
@@ -322,6 +337,13 @@ export function validateNewTask(event){
         li.removeChild(input);
         li.innerHTML = newTask;
         li.id = 'taskValid';
+        const tasks = localStorage.getItem(`tasks${projectId}`);
+        if(tasks){
+            localStorage.setItem(`tasks${projectId}`, [tasks, newTask]);
+        }
+        else{
+            localStorage.setItem(`tasks${projectId}`, [newTask]);
+        }
         for(let project in allProjects){
             if(projectId === allProjects[project].id){
                 allProjects[project].tasks.push(newTask);
@@ -352,7 +374,6 @@ export function returnToProject(event){
     linkID = linkID.join('');
     if(currentProjectOpen!==null){
         const projectToClose = document.getElementById(`currentProject${currentProjectOpen}`);
-        console.log(projectToClose);
         projectToClose.style.display = 'none';
     }
     const currentProject = document.getElementById(`currentProject${linkID}`);
